@@ -1,0 +1,33 @@
+{
+  "name": "clashofmeme-server",
+  "version": "0.0.1",
+  "description": "server part of clashofmeme, only one will be the winner",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdavidnel/FS3-reactnerverland-Server.git"
+  },
+  "keywords": [
+    "clashofmeme"
+  ],
+  "author": "Jean-David Nelson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdavidnel/FS3-reactnerverland-Server/issues"
+  },
+  "homepage": "https://github.com/jdavidnel/FS3-reactnerverland-Server#readme",
+  "devDependencies": {
+    "apollo-server-koa": "^2.4.8",
+    "graphql": "^14.1.1",
+    "graphql-tools": "^4.0.4",
+    "knex": "^0.16.3",
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-helmet": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "pg": "^7.9.0"
+  }
+}
