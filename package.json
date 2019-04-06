@@ -8,7 +8,8 @@
     "start": "npm run build:live",
     "build:babel": "babel --presets es2015 -d lib/ src",
     "build:tsc": "tsc -p .",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "db:creation": "node ./src/server/db/migrations/DatabaseCreation.js"
   },
   "repository": {
     "type": "git",
