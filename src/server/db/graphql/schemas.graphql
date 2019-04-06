@@ -1,7 +1,3 @@
-"""
-Définition des types de données
-"""
-
 type Author {
   author_id: ID
   first_name: String
@@ -23,19 +19,51 @@ type Movie {
   comments: [Comment]
 }
 
-"""
-Définition des prototypes des GET
-"""
+type Player {
+  _id: ID
+  score: Int
+  login: String
+  mail: String
+  mdp: String
+}
+
+type Round {
+  _id: ID
+  meme: [Meme]
+  vote: [Vote]
+	winner: Player
+}
+
+type Clash {
+  _id: ID
+  competitors: [Player]
+	suscribers: [Player]
+	round: [Round]
+	winner: Player
+}
+
+type Vote {
+  _id: ID
+  user: Player
+  for: Meme
+}
+
+type Meme {
+  _id: ID
+  image: String
+  player: Player
+}
 
 type Query {
   authors(author_id: ID, first_name: String, last_name: String): [Author]
   comments(comment_id: ID, author: ID): [Comment]
   movies(movie_id: ID, name: String, genre: String, rating: Int, explicit: Boolean): [Movie]
+  players(_id: ID, score: Int, login: String, mail: String, mdp: String): [Player]
+  clashs(_id: ID, competitors: ID, suscribers: ID,winner: ID): [Clash]
+  votes(_id: ID, user: ID, for: ID): [Vote]
+  memes(_id: ID, player: ID): [Meme]
+  rounds(_id: ID, meme: ID, winner: ID, vote: ID): [Round]
 }
-
-"""
-Définition des prototypes des POST, UPDATE, DELETE
-"""
 
 type Mutation {
   addMovie(movie_id: ID, name: String, genre: String, rating: Int, explicit: Boolean, comments: [ID]): Movie
@@ -49,4 +77,24 @@ type Mutation {
   addAuthor(author_id: ID, first_name: String, last_name: String): Author
   updateAuthor(author_id: ID!, first_name: String, last_name: String): Author
   deleteAuthor(author_id: ID!): Author
+
+  addPlayer(score: Int, login: String!, mail: String!, mdp: String!): Player
+  updatePlayer(_id: ID!, score: Int, mail: String, mdp: String): Player
+  deletePlayer(_id: ID!): Player
+
+  addClash(competitors: [ID]!, suscribers: ID, winner: ID): Clash
+  updateClash(_id: ID!, suscribers: ID, winner: ID): Clash
+  deleteClash(_id: ID!): Clash
+
+  addVote(user: ID!, for: ID!): Vote
+  updateVote(_id: ID! ,user: ID, for: ID): Vote
+  deleteVote(_id: ID!): Vote
+  
+  addMeme(image: String!, player: ID!): Meme
+  updateMeme(_id: ID! , image: String, player: ID): Meme
+  deleteMeme(_id: ID!): Meme
+
+  addRound(meme: [ID], winner: ID, vote: [ID]): Round
+  updateRound(_id: ID!, meme: [ID], winner: ID, vote: [ID]): Round
+  deleteRound(_id: ID!, vote: [ID]): Round
 }
