@@ -39,21 +39,30 @@ async function updatePlayer(player)
     let result = null;
 
     var id = player._id;
-    delete player._id; 
-    const test = await playerModel.update({_id: id } , { player }, { multi: false }, function (err, playerUpdate) {
+    delete player._id;
+    console.log("player");
+    console.log(player);
+    
+    const test = await playerModel.update({ _id: id } , player, { multi: false }, function (err, playerUpdate) {
         if (err) {            
             console.error(err);
             return result;
         }
+        console.log("player Update: ");
+        console.log(playerUpdate);
+        console.log("err ");
+        console.log(err);
         return true;
     });
     console.log("Update result");
     console.log(test);
-    return playerUpdate;
+    return player;
 }
 
-function deletePlayer(playerId) {
-    console.log("Not Implemented Update");
+async function deletePlayer(playerId) {
+    return await playerModel.findOneAndRemove({_id: playerId}, (err) => {
+        console.log(err);
+    });
 }
 
 module.exports = {

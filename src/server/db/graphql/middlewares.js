@@ -81,15 +81,15 @@ const schema = {
         return newPlayer;
       },
       deletePlayer: async (_, playerId) => {
-        const deletedPlayer = await playerRepository.deleteAuthor(playerId);
+        const deletedPlayer = await playerRepository.deletePlayer(playerId);
 
-        return deletedPlayer[0];
+        return null;
       },
 
       addClash: async (_, clash) => {
         const newClash = await clashRepository.addClash(clash);
 
-        return newClash[0];
+        return null;
       },
       updateClash: async (_, clash) => {
         const newClash = await clashRepository.updateClash(clash);
@@ -97,9 +97,9 @@ const schema = {
         return newClash[0];
       },
       deleteClash: async (_, clashId) => {
-        const deletedClash = await queries.deleteClash(clashId);
+        const deletedClash = await clashRepository.deleteClash(clashId);
 
-        return deletedClash[0];
+        return null;
       },
     },
     // Fonctions de récupération des données d'un auteur à partir d'un commentaire
@@ -147,6 +147,7 @@ const schema = {
           const player = await playerRepository.getPlayers({ _id: playerID });
           return player[0];
         }));
+        console.log("Competitors get from clash !");
         return players;
       },
       suscribers: async (clash) => {
