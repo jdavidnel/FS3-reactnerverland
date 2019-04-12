@@ -1,4 +1,4 @@
-import { DbConnection } from './db/connection';
+import DbConnection from './db/connection';
 /*import * as Koa from 'koa';
 import * as bodyParser from 'koa-bodyparser';
 import * as Router from 'koa-router';

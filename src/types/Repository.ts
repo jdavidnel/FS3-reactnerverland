@@ -1,9 +1,8 @@
-import * as mongoose from 'mongoose';
+/*import * as mongoose from 'mongoose';
 import { PlayerCollection, IPlayer } from './Model/PlayerModel'
 export let Schema = mongoose.Schema;
 export let ObjectId = mongoose.Schema.Types.ObjectId;
 export let Mixed = mongoose.Schema.Types.Mixed;
-
 
 export interface RepositoryBase<T extends mongoose.Document> {
 
@@ -64,4 +63,20 @@ export class playerRepository implements RepositoryBase<IPlayer>{
     private toObjectId(_id: string): mongoose.Types.ObjectId {
         return mongoose.Types.ObjectId.createFromHexString(_id);
     }
+}*/
+
+export type Callback<T> = (data: T, error?: Error) => void;
+export type PromiseResolve<T> = (value: T | PromiseLike<T>) => void;
+export type PromiseReject = (error?: any) => void;
+
+export default interface RepositoryBase<T> {
+
+    create(model: T, callback: (error: any, result: T) => void): void;
+    retrieve(callback: (error: any, result: T) => void): void;
+    update(_id: string, item: T, callback: (error: any, result: any) => void): void;
+    delete(_id: string, callback: (error: any, result: any) => void): void;
+    findById(_id: string, callback: (error: any, result: T) => void): void;
+    //findOne(cond?: Object, callback?: (err: any, res: T) => void): mongoose.Query<T>;
+    //find(cond?: Object, fields?: Object, options?: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]>;
+
 }
