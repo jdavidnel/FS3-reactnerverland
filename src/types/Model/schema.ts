@@ -18,14 +18,16 @@ const voteSchema: Schema = new Schema({
 }, { collection: 'Vote' });
 
 const roundSchema: Schema = new Schema({
-	meme: [{ type: Schema.Types.ObjectId, ref: 'Meme' }],
-	vote: [voteSchema],
+	f_meme: { type: Schema.Types.ObjectId, ref: 'Meme' },
+	nd_meme: { type: Schema.Types.ObjectId, ref: 'Meme' },
+	vote: [{ type: Schema.Types.ObjectId, ref: 'Vote' }],
 	winner: { type: Schema.Types.ObjectId, ref: 'Player' },
 }, { collection: 'Round' });
 
 
 const clashSchema: Schema = new Schema({
-	competitors: [{ type: Schema.Types.ObjectId, ref: 'Player' }],
+	f_competitors: { type: Schema.Types.ObjectId, ref: 'Player' },
+	nd_competitors: { type: Schema.Types.ObjectId, ref: 'Player' },
 	suscribers: [{ type: Schema.Types.ObjectId, ref: 'Player' }],
 	round: [{ type: Schema.Types.ObjectId, ref: 'Round' }],
 	winner: { type: Schema.Types.ObjectId, ref: 'Player' },

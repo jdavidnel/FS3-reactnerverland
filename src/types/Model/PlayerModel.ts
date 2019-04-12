@@ -3,9 +3,9 @@ import { playerSchema } from './schema';
 
 export interface IPlayer extends Document {
 	_id: Schema.Types.ObjectId;
-	name: string;
+	login: string;
 	mdp: string;
-	email: string;
+	mail: string;
 	score: number;
 }
 

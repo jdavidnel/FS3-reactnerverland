@@ -2,9 +2,10 @@ import { voteModel, IVote } from '../../../types/Model/VoteModel'
 import RepositoryBase from '../../../types/Repository';
 import { error } from 'util';
 
-export class VoteRepository implements RepositoryBase<IVote> {
+export class VoteRepository extends RepositoryBase<IVote> {
 
     constructor() {
+        super(voteModel);
         console.log("New Vote Repository");
     }
 
@@ -24,16 +25,12 @@ export class VoteRepository implements RepositoryBase<IVote> {
 
     }
 
-    public findById(_id: string, callback: (error: any, result: IVote) => void): void {
-        console.log("find on by id VOTE");
-        console.log(voteModel.findById(_id, callback));
-    }
 
     public async getVote(filters: any): Promise<IVote[]> {
         var getData = async () => {
             console.log("test");
             let list: IVote[] = [];
-            await voteModel.find(filters, (err: any, vote: IVote) => {
+            await this._model.find(filters, (err: any, vote: IVote) => {
                 if (err) {
                     console.log("error ");
                     console.log(err);

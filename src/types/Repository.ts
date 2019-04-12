@@ -68,14 +68,41 @@ export class playerRepository implements RepositoryBase<IPlayer>{
 export type Callback<T> = (data: T, error?: Error) => void;
 export type PromiseResolve<T> = (value: T | PromiseLike<T>) => void;
 export type PromiseReject = (error?: any) => void;
+import * as _ from 'lodash';
+import { Document, model, Model, Schema } from 'mongoose';
 
-export default interface RepositoryBase<T> {
+export default abstract class RepositoryBase<T> {
 
-    create(model: T, callback: (error: any, result: T) => void): void;
-    retrieve(callback: (error: any, result: T) => void): void;
-    update(_id: string, item: T, callback: (error: any, result: any) => void): void;
-    delete(_id: string, callback: (error: any, result: any) => void): void;
-    findById(_id: string, callback: (error: any, result: T) => void): void;
+    public _model: any;
+
+    constructor(model: any) {
+        this._model = model;
+    }
+
+    abstract create(model: T, callback: (error: any, result: T) => void): void;
+    abstract retrieve(callback: (error: any, result: T) => void): void;
+    abstract update(_id: string, item: T, callback: (error: any, result: any) => void): void;
+    abstract delete(_id: string, callback: (error: any, result: any) => void): void;
+
+    async findById(_id: string, callback?: (error: any, result: T) => void): Promise<any> {
+        if (_.isNil(_id))
+            return null;
+        let model: any = undefined;
+
+        if (!_.isNil(callback))
+            this._model.findById(_id, callback);
+        else {
+            await this._model.findById(_id, (error: any, result: T) => {
+                if (error)
+                    throw error;
+                else if (!result)
+                    throw new Error("no object found")
+                else
+                    model = result;
+            });
+        }
+        return model;
+    }
     //findOne(cond?: Object, callback?: (err: any, res: T) => void): mongoose.Query<T>;
     //find(cond?: Object, fields?: Object, options?: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]>;
 

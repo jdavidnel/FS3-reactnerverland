@@ -3,8 +3,9 @@ import { clashSchema } from './schema';
 import { IRound } from '../../types/Model/RoundModel';
 
 export interface IClash extends Document {
-	_id: Schema.Types.ObjectId
-	competitors: [string];
+	_id: Schema.Types.ObjectId;
+	f_competitors: String;
+	nd_competitors: String;
 	suscribers: [string];
 	round: [string];
 	winner: string;

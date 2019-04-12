@@ -2,10 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
-
+import { MiddlewaresGraphQL } from './server/db/graphql/middlewares';
+import { Middleware } from 'koa-compose';
 //const schemaTypedef = require('./server/db/graphql/middlewares');
-const { typeDefs } = require('./server/db/graphql/middlewares');
-const { resolvers } = require('./server/db/graphql/middlewares');
+
+let middlewares: MiddlewaresGraphQL = new MiddlewaresGraphQL();
+
+const { typeDefs } = middlewares;
+const { resolvers } = middlewares;
 
 // Some fake data
 /*

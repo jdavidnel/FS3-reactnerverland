@@ -1,24 +1,3 @@
-type Author {
-  author_id: ID
-  first_name: String
-  last_name: String
-}
-
-type Comment {
-  comment_id: ID
-  content: String
-  author: Author
-}
-
-type Movie {
-  movie_id: ID
-  name: String
-  genre: String
-  rating: Int
-  explicit: Boolean
-  comments: [Comment]
-}
-
 type Player {
   _id: ID
   score: Int
@@ -29,14 +8,16 @@ type Player {
 
 type Round {
   _id: ID
-  meme: [Meme]
+  f_meme: Meme
+  nd_meme: Meme
   vote: [Vote]
 	winner: Player
 }
 
 type Clash {
   _id: ID
-  competitors: [Player]
+  f_competitors: Player
+  nd_competitors: Player
 	suscribers: [Player]
 	round: [Round]
 	winner: Player
@@ -55,34 +36,19 @@ type Meme {
 }
 
 type Query {
-  authors(author_id: ID, first_name: String, last_name: String): [Author]
-  comments(comment_id: ID, author: ID): [Comment]
-  movies(movie_id: ID, name: String, genre: String, rating: Int, explicit: Boolean): [Movie]
-  players(_id: ID, score: Int, login: String, mail: String, mdp: String): [Player]
-  clashs(_id: ID, competitors: ID, suscribers: ID,winner: ID): [Clash]
+  players(_id: ID, score: Int, login: String, mail: String): [Player]
+  clashs(_id: ID, f_competitors: ID, nd_competitors: ID, suscribers: [ID], winner: ID): [Clash]
   votes(_id: ID, user: ID, for: ID): [Vote]
   memes(_id: ID, player: ID): [Meme]
-  rounds(_id: ID, meme: ID, winner: ID, vote: ID): [Round]
+  rounds(_id: ID, f_meme: ID, nd_meme: ID, winner: ID, vote: ID): [Round]
 }
 
 type Mutation {
-  addMovie(movie_id: ID, name: String, genre: String, rating: Int, explicit: Boolean, comments: [ID]): Movie
-  updateMovie(movie_id: ID!, name: String, genre: String, rating: Int, explicit: Boolean, comments: [ID]): Movie
-  deleteMovie(movie_id: ID!): Movie
-
-  addComment(comment_id: ID, content: String, author: ID!): Comment
-  updateComment(comment_id: ID!, content: String, author: ID!): Comment
-  deleteComment(comment_id: ID!): Comment
-
-  addAuthor(author_id: ID, first_name: String, last_name: String): Author
-  updateAuthor(author_id: ID!, first_name: String, last_name: String): Author
-  deleteAuthor(author_id: ID!): Author
-
   addPlayer(score: Int, login: String!, mail: String!, mdp: String!): Player
   updatePlayer(_id: ID!, score: Int, mail: String, mdp: String): Player
   deletePlayer(_id: ID!): Player
 
-  addClash(competitors: [ID]!, suscribers: ID, winner: ID): Clash
+  addClash(f_competitors: ID!, nd_competitors: ID!, suscribers: [ID], winner: ID): Clash
   updateClash(_id: ID!, suscribers: ID, winner: ID): Clash
   deleteClash(_id: ID!): Clash
 
@@ -94,7 +60,7 @@ type Mutation {
   updateMeme(_id: ID! , image: String, player: ID): Meme
   deleteMeme(_id: ID!): Meme
 
-  addRound(meme: [ID], winner: ID, vote: [ID]): Round
-  updateRound(_id: ID!, meme: [ID], winner: ID, vote: [ID]): Round
-  deleteRound(_id: ID!, vote: [ID]): Round
+  addRound(meme: [ID], f_meme: ID, nd_meme: ID, winner: ID, vote: [ID]): Round
+  updateRound(_id: ID!, f_meme: ID, nd_meme: ID, winner: ID, vote: [ID]): Round
+  deleteRound(_id: ID!): Round
 }
