@@ -3,11 +3,17 @@ import RepositoryBase from '../../../types/Repository';
 import { PlayerRepository } from './PlayerRepository';
 import { RoundRepository } from './RoundRepository';
 import * as _ from 'lodash';
+import { IRound } from '../../../types/Model/RoundModel';
 
 export class ClashRepository extends RepositoryBase<IClash> {
 
-    constructor() {
+    private _playerModel: PlayerRepository;
+    private _roundModel: RoundRepository;
+
+    constructor(playerRepo: PlayerRepository, roundRepo: RoundRepository) {
         super(clashModel);
+        this._playerModel = playerRepo;
+        this._roundModel = roundRepo;
         console.log("New Clash Repository");
     }
 
@@ -27,33 +33,24 @@ export class ClashRepository extends RepositoryBase<IClash> {
 
     }
 
-    public async getClash(filters: any): Promise<IClash[]> {
-        var getData = async () => {
-            let clashlist: IClash[] = new Array<IClash>();
-            await this._model.find(filters, (err: any, clash: IClash) => {
-                if (err) {
-                    console.log("error ");
-                    console.log(err);
-                }
-                clashlist.push(clash);
-            });
-            console.log("get Clashs");
-            console.log(clashlist);
-            return clashlist;
-        };
-        return (await getData());
-    }
-
     public async addClash(filters: any): Promise<any> {
-        let competitors1 = await (new PlayerRepository).findById(filters.f_competitors as string);
-        let competitors2 = await (new PlayerRepository).findById(filters.nd_competitors as string);
+        let competitors1: boolean = await this._playerModel.isExist(filters.f_competitors as string);
+        let competitors2: boolean = await this._playerModel.isExist(filters.nd_competitors as string);
 
-        if (_.isNil(competitors1) || _.isNil(competitors2)) {
+        if (!competitors1 || !competitors2) {
             console.log("competiteur n'existe pas!");
             return null;
         }
         let clash: any = null;
-        delete filters._id;
+        let rounds: IRound[] = new Array<IRound>();
+
+        for (var i = 0; i < 3; i++) {
+            let round: any = await this._roundModel.addRound({});
+            if (!_.isNil(round))
+                rounds.push(round);
+        }
+        filters.round = rounds;
+        filters.inprogress = true;
         let newClash = new clashModel(filters);
         clash = await newClash.save();
         console.log("add clash");
@@ -63,26 +60,31 @@ export class ClashRepository extends RepositoryBase<IClash> {
 
     public async updateClash(clash: any): Promise<any> {
         let updatedClash: any = null;
-        let winner: boolean = await (new PlayerRepository).playerExist(clash.winner);
-        let suscriber: boolean = await (new PlayerRepository).playerExist(clash.suscribers);
-
-        if ((!winner && clash.winner != undefined) || (!suscriber && clash.suscriber != undefined))
-            return null;
         var id = clash._id;
         delete clash._id;
-        const test = await this._model.update({ _id: id }, clash, { multi: false }, function (err: any, clashUpdate: IClash) {
-            if (err) throw err;
-            // for some reason no saved obj return
-            else if (!clashUpdate) throw new Error("no object found")
-            else updatedClash = clashUpdate;
-        });
+        let suscriberExist: boolean = await this._playerModel.isExist(clash.suscribers);
+        let clashExist: boolean = await this.isExist(id);
+
+        if (!clashExist || !suscriberExist) {
+            console.log("suscriber not found");
+            return null;
+        }
+        let suscribers: string[] = (await this.findById(id)).suscribers;
+        suscribers.push(clash.suscribers);
+        updatedClash = await this._model.findOneAndUpdate({ _id: id }, { suscribers: suscribers }, { multi: false });
         console.log("Update Players");
         console.log(updatedClash);
+
         return updatedClash;
     }
 
     public async deleteClash(clashID: string): Promise<any> {
+        let clashExist: boolean = await this.isExist(clashID);
 
+        if (!clashExist)
+            return null;
+        console.log("ClashID : ");
+        console.log(clashID);
         let clash = await this._model.findById(clashID, (err: any, clashres: IClash) => {
 
             console.log("DELETE CLASH ! ");
@@ -93,7 +95,7 @@ export class ClashRepository extends RepositoryBase<IClash> {
             clashres.round.forEach(element => {
                 console.log("ROUNDS OF  CLASH ! ");
                 console.log(element);
-                (new RoundRepository).deleteRound(element);
+                this._roundModel.deleteRound(element);
             });
         });
         return await clashModel.findOneAndRemove({ _id: clashID }, (err) => {

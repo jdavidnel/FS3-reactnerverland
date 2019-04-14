@@ -8,6 +8,7 @@ export interface IClash extends Document {
 	nd_competitors: String;
 	suscribers: [string];
 	round: [string];
+	inprogress: Boolean;
 	winner: string;
 }
 

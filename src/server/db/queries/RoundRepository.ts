@@ -4,11 +4,17 @@ import { PlayerRepository } from './PlayerRepository';
 import { MemeRepository } from './MemeRepository';
 import { IPlayer } from '../../../types/Model/PlayerModel';
 import { error } from 'util';
+import { IVote } from '../../../types/Model/VoteModel';
+import { VoteRepository } from './VoteRepository';
+import * as _ from 'lodash';
 
 export class RoundRepository extends RepositoryBase<IRound> {
 
-    constructor() {
+    private _memeRepo: MemeRepository;
+
+    constructor(memeRepo: MemeRepository) {
         super(roundModel);
+        this._memeRepo = memeRepo;
         console.log("New Round Repository");
     }
 
@@ -45,42 +51,43 @@ export class RoundRepository extends RepositoryBase<IRound> {
         return (await getData());
     }
 
-    public async addRound(round: any): Promise<any> {
-        let winner: boolean = await (new PlayerRepository()).playerExist(round.winner);
-        if (round.winner != undefined && !winner)
-            return null;
-        let newRound = new roundModel({ meme: round.meme, Vote: round.vote, winner: round.winner })
+    public async addRound(filters: any): Promise<any> {
+        let newRound = new roundModel(filters);
         let roundResult: any = null;
         roundResult = await newRound.save();
-        console.log("add clash");
+        console.log("add Meme");
         console.log(roundResult);
         return roundResult;
     }
 
     public async updateRound(filters: any): Promise<any> {
         let updatedRound: any = null;
-        let f_meme: boolean = await (new MemeRepository()).memeExist(filters.f_meme);
-        let nd_meme: boolean = await (new MemeRepository()).memeExist(filters.nd_meme);
-        let winner: boolean = await (new PlayerRepository()).playerExist(filters.winner);
+        let f_meme: boolean = await this._memeRepo.isExist(filters.f_meme);
+        let nd_meme: boolean = await this._memeRepo.isExist(filters.nd_meme);
 
-        if ((!f_meme && filters.f_meme != undefined) || (!nd_meme && filters.nd_meme != undefined))
+        if (!nd_meme && !f_meme) {
+            console.log("Meme not found");
             return null;
-        if ((!winner && filters.winner != undefined))
-            return null;
+        }
         var id = filters._id;
         delete filters._id;
-        const test = await roundModel.update({ _id: id }, filters, { multi: false }, function (err, clashUpdate: IRound) {
-            if (err) throw err;
-            // for some reason no saved obj return
-            else if (!clashUpdate) throw new Error("no object found")
-            else updatedRound = clashUpdate;
-        });
-        console.log("Update Players");
+        updatedRound = await roundModel.findOneAndUpdate({ _id: id }, filters);
+        console.log("Update Round");
         console.log(updatedRound);
         return updatedRound;
     }
 
     public async deleteRound(roundID: string): Promise<any> {
         return null;
+    }
+
+    public async vote(roundID: string): Promise<any[]> {
+        let round: any = await this.findById(roundID);
+        const votes = await Promise.all(round.vote.map(async (voteID: any) => {
+            const vote = await VoteRepository.getVote(voteID);
+            if (!_.isNil)
+                return vote;
+        }));
+        return votes;
     }
 }

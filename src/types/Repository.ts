@@ -84,13 +84,39 @@ export default abstract class RepositoryBase<T> {
     abstract update(_id: string, item: T, callback: (error: any, result: any) => void): void;
     abstract delete(_id: string, callback: (error: any, result: any) => void): void;
 
-    async findById(_id: string, callback?: (error: any, result: T) => void): Promise<any> {
+    protected deleteNilAttr(object: any, arrayID: string[]) {
+        for (var property in object) {
+            if (object.hasOwnProperty(property) && arrayID.indexOf(property) != -1) {
+                console.log("affiche proprieté object");
+                console.log(property);
+                delete object.property;
+            }
+        }
+    }
+
+    public async isExist(ID: string): Promise<boolean> {
+        let model: any = await this.findById(ID);
+        if (!_.isNil(model))
+            return true;
+        return false;
+    }
+
+    public async get(filters: any): Promise<T[]> {
+        let list: T[] = new Array<T>();
+
+        list = await this._model.find(filters);
+        console.log("get list");
+        console.log(list);
+        return list;
+    }
+
+    public async findById(_id: string, callback?: (error: any, result: T) => void): Promise<any> {
         if (_.isNil(_id))
             return null;
         let model: any = undefined;
 
         if (!_.isNil(callback))
-            this._model.findById(_id, callback);
+            return this._model.findById(_id, callback);
         else {
             await this._model.findById(_id, (error: any, result: T) => {
                 if (error)

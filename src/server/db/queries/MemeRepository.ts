@@ -3,9 +3,11 @@ import RepositoryBase from '../../../types/Repository';
 import { PlayerRepository } from './PlayerRepository';
 
 export class MemeRepository extends RepositoryBase<IMeme> {
+    private _playerRepo: PlayerRepository;
 
-    constructor() {
+    constructor(playerRepo: PlayerRepository) {
         super(memeModel);
+        this._playerRepo = playerRepo;
         console.log("New Meme Repository");
     }
 
@@ -25,39 +27,15 @@ export class MemeRepository extends RepositoryBase<IMeme> {
 
     }
 
-    public async getMeme(filters: any): Promise<IMeme[]> {
-        var getData = async () => {
-            console.log("get MEME");
-            let list: IMeme[] = [];
-            await memeModel.find(filters, (err: any, clash: IMeme) => {
-                if (err) {
-                    console.log("error ");
-                    console.log(err);
-                }
-                list.push(clash);
-            });
-            return list;
-        };
-        return (await getData());
-    }
-
-    public async memeExist(memeID: string): Promise<boolean> {
-        let result: boolean = false;
-        let meme: any = await this.findById(memeID);
-        if (meme != undefined)
-            return true;
-        return result;
-    }
-
-    public async addMeme(meme: any): Promise<any> {
+    public async addMeme(filters: any): Promise<any> {
         let result: any = null;
-        let isExist: Boolean = await (new PlayerRepository()).playerExist(meme.meme.player);
+        let isExist: Boolean = await this._playerRepo.isExist(filters.player);
 
-        if (isExist == false)
+        if (!isExist)
             return undefined;
-        let newMeme = new memeModel({ image: meme.image, player: meme.player });
+        let newMeme = new memeModel(filters);
         result = await newMeme.save();
-        console.log("Update Players");
+        console.log("Update Meme");
         console.log(result);
         return result;
     }
@@ -66,18 +44,7 @@ export class MemeRepository extends RepositoryBase<IMeme> {
         let updatedMeme: any = null;
         var id = meme._id;
         delete meme._id;
-
-        if (meme.player != undefined && !(await (new PlayerRepository()).playerExist(meme.player)))
-            return undefined;
-
-        const test = await memeModel.update({ _id: id }, meme, { multi: false }, function (err: any, savedObj: IMeme) {
-            // some error occurs during save
-            if (err) throw err;
-            // for some reason no saved obj return
-            else if (!savedObj) throw new Error("no object found")
-            else
-                updatedMeme = savedObj;
-        });
+        updatedMeme = await this._model.findOneAndUpdate({ _id: id }, meme, { multi: false });
         console.log("Update Meme");
         console.log(updatedMeme);
         return meme;

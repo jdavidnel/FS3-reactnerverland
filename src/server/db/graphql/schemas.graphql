@@ -20,6 +20,7 @@ type Clash {
   nd_competitors: Player
 	suscribers: [Player]
 	round: [Round]
+  inprogress: Boolean
 	winner: Player
 }
 
@@ -41,26 +42,29 @@ type Query {
   votes(_id: ID, user: ID, for: ID): [Vote]
   memes(_id: ID, player: ID): [Meme]
   rounds(_id: ID, f_meme: ID, nd_meme: ID, winner: ID, vote: ID): [Round]
+  authentification(login: string!, mdp: string!): string
 }
 
 type Mutation {
-  addPlayer(score: Int, login: String!, mail: String!, mdp: String!): Player
-  updatePlayer(_id: ID!, score: Int, mail: String, mdp: String): Player
+  addPlayer(login: String!, mail: String!, mdp: String!): Player
+  updatePlayer(_id: ID!, mail: String, mdp: String): Player
   deletePlayer(_id: ID!): Player
 
-  addClash(f_competitors: ID!, nd_competitors: ID!, suscribers: [ID], winner: ID): Clash
-  updateClash(_id: ID!, suscribers: ID, winner: ID): Clash
+  addClash(f_competitors: ID!, nd_competitors: ID!, suscribers: [ID]): Clash
+  createClash(f_competitors: ID!, nd_competitors: ID!): Clash
+  updateClash(_id: ID!, suscribers: ID!): Clash
+  addSuscriberClash(_id: ID!, suscribers: ID!): Clash
   deleteClash(_id: ID!): Clash
 
-  addVote(user: ID!, for: ID!): Vote
-  updateVote(_id: ID! ,user: ID, for: ID): Vote
+  addVote(user: ID!, for: ID!, roundID: ID!): Vote
+  updateVote(_id: ID!, for: ID): Vote
   deleteVote(_id: ID!): Vote
   
   addMeme(image: String!, player: ID!): Meme
-  updateMeme(_id: ID! , image: String, player: ID): Meme
+  updateMeme(_id: ID! , image: String!): Meme
   deleteMeme(_id: ID!): Meme
 
-  addRound(meme: [ID], f_meme: ID, nd_meme: ID, winner: ID, vote: [ID]): Round
-  updateRound(_id: ID!, f_meme: ID, nd_meme: ID, winner: ID, vote: [ID]): Round
+  addRound(f_meme: ID, nd_meme: ID): Round
+  updateRound(_id: ID!, f_meme: ID, nd_meme: ID): Round
   deleteRound(_id: ID!): Round
 }

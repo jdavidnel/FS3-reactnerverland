@@ -29,6 +29,7 @@ const clashSchema: Schema = new Schema({
 	f_competitors: { type: Schema.Types.ObjectId, ref: 'Player' },
 	nd_competitors: { type: Schema.Types.ObjectId, ref: 'Player' },
 	suscribers: [{ type: Schema.Types.ObjectId, ref: 'Player' }],
+	inprogress: Boolean,
 	round: [{ type: Schema.Types.ObjectId, ref: 'Round' }],
 	winner: { type: Schema.Types.ObjectId, ref: 'Player' },
 }, { collection: 'Clash' });
