@@ -25,6 +25,7 @@ import * as crypto from "crypto";
 
 const mongo = require('../connection');
 const jwt = require('jsonwebtoken');
+const secretKey = "secretKey";
 
 export class MiddlewaresGraphQL {
 
@@ -47,6 +48,7 @@ export class MiddlewaresGraphQL {
   }
 
   constructor() {
+    this._token = "TestToken";
     require('crypto').randomBytes(48, (err: any, buffer: any) => {
       this._token = buffer.toString('hex');
     });
@@ -90,13 +92,19 @@ export class MiddlewaresGraphQL {
 
           if (result.length == 0)
             return null;
+          const payload = {
+            admin: result[0]._id
+          };
+          var token = jwt.sign(payload, secretKey, {
+            expiresInMinutes: 600 // expires in 24 hours
+          });
           /*const payload = {
             admin: result[0].login
           };
           var token = jwt.sign(payload, this._token, {
             expiresInMinutes: 1440 // expires in 24 hours
           });*/
-          return this._token;
+          return token;
         },
       },
       // Prototypes des fonctions POST, UPDATE, DELETE
@@ -119,9 +127,16 @@ export class MiddlewaresGraphQL {
           let clashAdded: any = await this._clashRepo.addClash(clash);
 
           let clashWorks: IClash[] = await this._clashRepo.get({ inprogress: true });
-          this._io.sockets.on('connection', function (socket: any) {
-            socket.broadcast.emit('GetClashList', clashWorks);
-          });
+          console.log("IO IS NULL ?");
+          if (this._io != undefined || this._io != null) {
+            console.log("emit SOCKET from " + this._io.userid);
+            this._io.broadcast.emit('GetClashList', clashWorks);
+          }
+          /*console.log(this._io);
+          this._io.on('connection', (socket: any) => {
+            console.log("add CLASH!!");
+            
+          });*/
           return clashAdded;
         },
         updateClash: async (_: any, clash: any) => {
