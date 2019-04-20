@@ -4,7 +4,7 @@ that allow you to be in competition with other user to get the best meme for a c
 
 ## Getting Started
 &nbsp;&nbsp;clone the repo:  
-`git clone git@github.com:jdavidnel/LeftOver-server.git`  
+`git clone git@github.com:jdavidnel/FS3-reactnerverland-Server.git`  
 &nbsp;&nbsp;run:   
 `npm install`  
 `npm start`  
