@@ -42,7 +42,8 @@ type Query {
   votes(_id: ID, user: ID, for: ID): [Vote]
   memes(_id: ID, player: ID): [Meme]
   rounds(_id: ID, f_meme: ID, nd_meme: ID, winner: ID, vote: ID): [Round]
-  authentification(login: string!, mdp: string!): string
+  authentification(login: String!, mdp: String!): String
+  testConfi(_id: ID): String
 }
 
 type Mutation {
@@ -50,7 +51,7 @@ type Mutation {
   updatePlayer(_id: ID!, mail: String, mdp: String): Player
   deletePlayer(_id: ID!): Player
 
-  addClash(f_competitors: ID!, nd_competitors: ID!, suscribers: [ID]): Clash
+  addClash(f_competitors: ID!, nd_competitors: ID!, userID: ID! , suscribers: [ID]): Clash
   createClash(f_competitors: ID!, nd_competitors: ID!): Clash
   updateClash(_id: ID!, suscribers: ID!): Clash
   addSuscriberClash(_id: ID!, suscribers: ID!): Clash

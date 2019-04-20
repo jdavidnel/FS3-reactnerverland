@@ -22,6 +22,9 @@ import { IRound } from '../../../types/Model/RoundModel';
 import { IVote } from '../../../types/Model/VoteModel';
 import { IMeme } from '../../../types/Model/MemeModel';
 import * as crypto from "crypto";
+import { config } from '../../../config';
+import * as Collections from 'typescript-collections';
+import * as _ from 'lodash';
 
 const mongo = require('../connection');
 const jwt = require('jsonwebtoken');
@@ -36,7 +39,7 @@ export class MiddlewaresGraphQL {
   public _roundRepo: RoundRepository;
   public _resolvers: any;
   public _typeDefs: any;
-  public _io: any;
+  public _sockets: Collections.Dictionary<string, any>;
   public _token: string;
 
   get typeDefs(): any {
@@ -48,6 +51,7 @@ export class MiddlewaresGraphQL {
   }
 
   constructor() {
+    this._sockets = new Collections.Dictionary<string, any>();
     this._token = "TestToken";
     require('crypto').randomBytes(48, (err: any, buffer: any) => {
       this._token = buffer.toString('hex');
@@ -87,24 +91,21 @@ export class MiddlewaresGraphQL {
           return list;
         },
         authentification: async (_: any, filters: any) => {
-          console.log(_);
-          let result: IPlayer[] = await this._playerRepo.get(filters);
-
-          if (result.length == 0)
-            return null;
-          const payload = {
-            admin: result[0]._id
-          };
-          var token = jwt.sign(payload, secretKey, {
-            expiresInMinutes: 600 // expires in 24 hours
-          });
-          /*const payload = {
-            admin: result[0].login
-          };
-          var token = jwt.sign(payload, this._token, {
-            expiresInMinutes: 1440 // expires in 24 hours
-          });*/
+          /* if (filters.login == "" || filters.mdp == "")
+             return null;
+           let result: IPlayer[] = await this._playerRepo.get(filters);
+           if (result.length == 0)
+             return null;
+           const payload = {
+             _id: result[0]._id
+           };*/
+          var token = "";//jwt.sign(payload, "superSecret", config.signOptions);
           return token;
+        },
+        testConfi: function (_: any) {
+          console.log(this);
+          console.log(arguments);
+          return "OK";
         },
       },
       // Prototypes des fonctions POST, UPDATE, DELETE
@@ -122,21 +123,16 @@ export class MiddlewaresGraphQL {
           return null;
         },
 
-        addClash: async (_: any, clash: any) => {
+        addClash: async (_: any, filters: any) => {
 
-          let clashAdded: any = await this._clashRepo.addClash(clash);
+          let clashAdded: any = await this._clashRepo.addClash(filters);
 
           let clashWorks: IClash[] = await this._clashRepo.get({ inprogress: true });
           console.log("IO IS NULL ?");
-          if (this._io != undefined || this._io != null) {
-            console.log("emit SOCKET from " + this._io.userid);
-            this._io.broadcast.emit('GetClashList', clashWorks);
+          if (!_.isNil(this._sockets.getValue(filters.userID))) {
+            console.log("emit SOCKET from " + filters.userID);
+            this._sockets.getValue(filters.userID).broadcast.emit('GetClashList', clashWorks);
           }
-          /*console.log(this._io);
-          this._io.on('connection', (socket: any) => {
-            console.log("add CLASH!!");
-            
-          });*/
           return clashAdded;
         },
         updateClash: async (_: any, clash: any) => {
@@ -166,10 +162,11 @@ export class MiddlewaresGraphQL {
           return null;
         },
 
-        addMeme: async (_: any, clash: any) => {
+        addMeme: async (_: any, meme: any) => {
           //const newClash = await clashRepository.addClash(clash);
+          let memeAdded: any = await this._memeRepo.addMeme(meme)
 
-          return null;
+          return memeAdded;
         },
         updateMeme: async (_: any, clash: any) => {
           //const newClash = await clashRepository.updateClash(clash);
@@ -266,12 +263,3 @@ export class MiddlewaresGraphQL {
   }
 
 }
-
-
-
-
-
-
-
-console.log("SCHEMA MIDDLEWARE!!");
-console.log("SCHEMA MIDDLEWARE FIN!!");

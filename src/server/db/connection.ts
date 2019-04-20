@@ -18,7 +18,7 @@ export class DbConnection {
 mongoose.connect('mongodb://localhost/blog', function (err) {
   if (err) { throw err; }
 });*/
-
+import { config } from "../../config"
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 

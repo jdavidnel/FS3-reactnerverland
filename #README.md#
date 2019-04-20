@@ -1,0 +1,97 @@
+LeftOver-server
+LeftOver-server is the backend server for the leftOver application, which offers receipe choices depending on the available ingredients.
+
+## Getting Started
+&nbsp;&nbsp;clone the repo:  
+`git clone git@github.com:imadKimouche/LeftOver-server.git`  
+&nbsp;&nbsp;run:   
+`npm install`  
+`npm start`  
+&nbsp;&nbsp;See [endpoints](#Endpoits) next.
+
+### Prerequisites
+&nbsp;&nbsp;Check [Package.json](package.json)
+
+#### Endpoints  
+* #### api
+  * `POST` [signup](#post-signup)  
+  * `GET` [login](#get-login)
+* #### Ingredient 
+  * `GET` [ingredients](#get-ingredients)  
+  * `GET` [ingredients/:subword](#get-ingredients/:subword)
+* #### Dishes  
+  * `GET` [dishes](#get-dishes)  
+  * `GET` [dishes/:subword](#get-dishes/:subword)  
+
+#### `POST` signup  
+&nbsp;&nbsp;Adds a new user to the user database.  
+##### Parameters  
+&nbsp;&nbsp;  - `email` `password` `firstname` `lastname`  
+##### Response  
+&nbsp;&nbsp;A valid token `token`.
+
+#### `GET` ingredients  
+&nbsp;&nbsp;Gets all the ingredients available on the database.
+##### Response
+```
+"ingredients": [
+        {
+            "name": "pâte brisée",
+            "picture": "https://assets.afcdn.com/recipe/20181220/84975_w100h100c1cx1200cy1200cxt0cyt0cxb2400cyb2400.jpg"
+        }, ...]
+```
+#### `GET` ingredients/:subword  
+&nbsp;&nbsp;Gets all the ingredients containing the subword `:subword`.
+##### Response
+```
+{
+    "ingredient": {
+        "name": "poulet",
+        "picture": "https://assets.afcdn.com/recipe/20170607/67769_w100h100c1cx350cy350.jpg"
+    }
+}
+```
+#### `GET` dishes  
+&nbsp;&nbsp;Gets all the dishes that have all the parameters passed in the request.  
+#### Parameters  
+&nbsp;&nbsp;*`ing`*: a comma separated `string`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ex: `ing=ingredient1,ingredient2,...`  
+
+#### Response  
+```
+"dishes": [
+        {
+            "name": "Poulet basquaise",
+            "picture": "https://image.afcdn.com/recipe/20170614/69328_w420h344c1cx2000cy3000.jpg",
+            "quantity": 6, 
+            "time": "1h20",
+            "ingredients": " poulet:1:https://assets.afcdn.com/recipe/20170607/67769_w100h100c1cx350cy350.jpg,kg  de tomate:1:https://assets.afcdn.com/recipe/20170607/67459_w100h100c1cx350cy350.jpg,g  de poivron:700:https://assets.afcdn.com/recipe/20170607/67464_w100h100c1cx350cy350.jpg, oignon:3:https://assets.afcdn.com/recipe/20170607/67621_w100h100c1cx350cy350.jpg,gousse  d'ail:3:https://assets.afcdn.com/recipe/20170607/67514_w100h100c1cx350cy350.jpg,cl  de vin blanc:20:https://assets.afcdn.com/recipe/20170607/67771_w100h100c1cx350cy350.jpg, bouquet garni:1:https://assets.afcdn.com/recipe/20170607/67407_w100h100c1cx350cy350.jpg,cuillère à soupe  d'huile d'olive:6:https://assets.afcdn.com/recipe/20170607/67683_w100h100c1cx350cy350.jpg, sel:undefined:https://assets.afcdn.com/recipe/20170607/67687_w100h100c1cx350cy350.jpg, poivre:undefined:https://assets.afcdn.com/recipe/20170607/67563_w100h100c1cx350cy350.jpg",
+            "steps": [
+                "\nHacher l'oignon et l'ail. Couper les tomates en morceaux et détailler les poivrons en lanières.",
+                "\nFaire chauffer 4 cuillères à soupe d'huile dans une cocotte. Y faire dorer les oignons",
+                " l'ail et les poivron. Laisser cuire 5 min.",
+                "\nAjouter les tomates à la cocotte",
+                " saler",
+                " poivrer. Couvrir et laisser mijoter 20 min.",
+                "\nDans une sauteuse",
+                " faire dorer dans l'huile d'olive les morceaux de poulet salés et poivrés. ",
+                "\nLorsqu'ils sont dorés",
+                " les ajouter aux légumes",
+                " couvrir",
+                " ajouter le bouquet garni et le vin blanc et c'est parti pour 35 min de cuisson."
+            ]
+        },...
+```
+#### `GET` dishes/:subword  
+&nbsp;&nbsp;Gets all the dishes containing the subword `:subword`  
+
+### Running the tests  
+&nbsp;&nbsp;Run `npm test`  
+
+### Deployment
+&nbsp;&nbsp;LeftOver-server is deployed with [heroku](https://www.heroku.com)  
+&nbsp;&nbsp;api url: `https://leftoverjs.herokuapp.com`  
+
+### Built with
+&nbsp;&nbsp;[Node.js](https://nodejs.org/en/)  
+&nbsp;&nbsp;[Koa](https://koajs.com/)  
